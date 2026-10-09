@@ -1,19 +1,19 @@
 .recipe-detail .category-label {
-    display: inline-block;
-    font-size: .9rem;
-    letter-spacing: .12em;
+  display: inline-block;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
 }
 
 .recipe-detail .favorite-button.large {
-    border: 1px solid var(--brown);
-    padding: .72rem 1.1rem;
-    color: var(--brown);
-    background: transparent;
+  border: 1px solid var(--brown);
+  padding: 0.72rem 1.1rem;
+  color: var(--brown);
+  background: transparent;
 }
 
 .recipe-detail .favorite-button.large:hover,
 .recipe-detail .favorite-button.large.is-favorited {
-    color: var(--peach);
-    border-color: var(--peach);
-    background: var(--peach-soft);
+  color: var(--peach);
+  border-color: var(--peach);
+  background: var(--peach-soft);
 }
