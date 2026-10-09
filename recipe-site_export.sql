@@ -1,2 +1,0 @@
--- Pending: generate this file with phpMyAdmin after importing database.sql.
--- Do not treat this placeholder as a database export. See README.md for the required procedure.

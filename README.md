@@ -8,7 +8,7 @@ Tamis is a responsive recipe-sharing website for Filipino home cooks in a barang
 - Recipe CRUD with ownership checks and transactional ingredient updates.
 - Separate ingredient rows with dynamic add/remove inputs using vanilla JavaScript.
 - Search by recipe title or description and category filtering.
-- Recipe details with preserved instruction line breaks and estimated reading time.
+- Recipe details with preserved cooking-instruction line breaks.
 - Comment create, edit, delete, ownership validation, and edited markers.
 - Asynchronous favorite add/remove through Fetch API and JSON.
 - Comment counts and a three-item Popular Recipes section.
@@ -29,7 +29,7 @@ api/          JSON favorite endpoint
 assets/       Responsive CSS and JavaScript
 *.php         Traditional page handlers and views
 database.sql  Six-table setup schema and category seed data
-recipe-site_export.sql  Pending genuine phpMyAdmin export artifact
+recipe-site.sql  Genuine phpMyAdmin export
 ```
 
 ## Database Relationships
@@ -61,13 +61,13 @@ C:\xampp\php\php.exe -l path\to\file.php
 
 ## Database Export Requirement
 
-`recipe-site_export.sql` is intentionally pending until a real phpMyAdmin export is generated. Do not claim it is valid yet. After creating the final clean database with categories and no personal member data:
+`recipe-site.sql` is the genuine phpMyAdmin export supplied for this project. It contains the final six-table schema and sample records. For a fresh schema-only setup, use `database.sql` instead.
 
 1. Open `http://localhost/phpmyadmin/`.
 2. Select `recipe_site`.
 3. Choose **Export**.
 4. Select **Quick** and **SQL**.
-5. Click **Export** and save the file as `recipe-site_export.sql` in this project root.
-6. Replace the pending placeholder and verify that the export contains the same six tables and foreign keys.
+5. Click **Export** and save the file as `recipe-site.sql` in this project root.
+6. Verify that the export contains the same six tables and foreign keys.
 
 No GitHub repository is changed automatically by this project.
