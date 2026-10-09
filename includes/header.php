@@ -12,6 +12,7 @@ $userName = isset($_SESSION['user_name']) ? (string) $_SESSION['user_name'] : ''
     <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
     <title><?= e($pageTitle) ?> · Tamis</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/recipe-detail.css">
 </head>
 <body>
 <header class="site-header">
@@ -24,9 +25,9 @@ $userName = isset($_SESSION['user_name']) ? (string) $_SESSION['user_name'] : ''
             <span></span><span></span><span></span>
         </button>
         <nav id="main-navigation" class="site-nav" aria-label="Main navigation">
-            <a class="<?= $currentPage === 'home' ? 'is-current' : '' ?>" href="index.php">Discover</a>
-            <a class="<?= $currentPage === 'favorites' ? 'is-current' : '' ?>" href="favorites.php">Saved recipes</a>
-            <a class="<?= $currentPage === 'create' ? 'is-current' : '' ?>" href="create-recipe.php">Share a recipe</a>
+            <a class="<?= $currentPage === 'home' ? 'is-current' : '' ?>" href="index.php">Home</a>
+            <a class="<?= $currentPage === 'favorites' ? 'is-current' : '' ?>" href="favorites.php">Favorite Recipes</a>
+            <a class="<?= $currentPage === 'create' ? 'is-current' : '' ?>" href="create-recipe.php">Share a Recipe</a>
             <span class="nav-divider" aria-hidden="true"></span>
             <span class="nav-user">Hi, <?= e($userName) ?></span>
             <a class="nav-quiet" href="logout.php">Log out</a>

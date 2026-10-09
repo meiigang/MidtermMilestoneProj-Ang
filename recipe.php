@@ -1,19 +1,113 @@
 <?php
 declare(strict_types=1);
+
 require __DIR__ . '/config/app.php';
 require __DIR__ . '/includes/auth.php';
+
 $userId = require_authentication();
 $recipeId = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 $recipeService = new Recipe($pdo);
 $recipe = $recipeId === false || $recipeId === null ? null : $recipeService->find((int) $recipeId, $userId);
+
 if ($recipe === null) {
     http_response_code(404);
     flash('Recipe not found.', 'error');
     redirect('index.php');
 }
+
 $comments = (new Comment($pdo))->forRecipe((int) $recipe['id']);
 $pageTitle = (string) $recipe['title'];
 require __DIR__ . '/includes/header.php';
 ?>
-<div class="recipe-detail-layout"><article class="recipe-detail"><a class="back-link" href="index.php">← Back to discover</a><div class="detail-heading"><span class="category-label"><?= e($recipe['category_name']) ?></span><h1><?= e($recipe['title']) ?></h1><p class="detail-description"><?= e($recipe['description']) ?></p><div class="detail-meta"><span>By <strong><?= e($recipe['author_name']) ?></strong></span><span><?= format_date($recipe['created_at']) ?><?= !empty($recipe['is_edited']) ? ' · Edited' : '' ?></span><span><?= reading_time($recipe['instructions']) ?> min read</span></div></div><div class="detail-actions"><button class="favorite-button large <?= (int) $recipe['is_favorited'] ? 'is-favorited' : '' ?>" type="button" data-favorite-id="<?= (int) $recipe['id'] ?>" aria-pressed="<?= (int) $recipe['is_favorited'] ? 'true' : 'false' ?>"><span aria-hidden="true">♥</span><span class="favorite-text"><?= (int) $recipe['is_favorited'] ? 'Saved to your recipes' : 'Save this recipe' ?></span></button><?php if ((int) $recipe['user_id'] === $userId): ?><a class="button button-outline" href="edit-recipe.php?id=<?= (int) $recipe['id'] ?>">Edit recipe</a><form method="post" action="delete-recipe.php" onsubmit="return confirm('Delete this recipe?')"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="recipe_id" value="<?= (int) $recipe['id'] ?>"><button class="button button-danger" type="submit">Delete</button></form><?php endif; ?></div><div class="recipe-body"><section><h2>Ingredients</h2><ul class="ingredient-list"><?php foreach ($recipe['ingredients'] as $ingredient): ?><li><?= e($ingredient) ?></li><?php endforeach; ?></ul></section><section><h2>How to make it</h2><div class="instructions"><?= nl2br(e($recipe['instructions'])) ?></div></section></div></article><aside class="comments-panel"><div class="section-heading"><div><p class="eyebrow">Around the table</p><h2>Comments</h2></div><span class="result-count"><?= count($comments) ?></span></div><form class="comment-form" method="post" action="comment-action.php"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="action" value="create"><input type="hidden" name="recipe_id" value="<?= (int) $recipe['id'] ?>"><label for="comment-content">Leave a note</label><textarea id="comment-content" name="content" maxlength="1000" placeholder="What did you think?" required></textarea><button class="button button-dark" type="submit">Add comment</button></form><?php if ($comments === []): ?><p class="muted">No notes yet. Be the first to say kamusta.</p><?php else: ?><div class="comment-list"><?php foreach ($comments as $comment): ?><article class="comment-item"><div class="comment-header"><strong><?= e($comment['author_name']) ?></strong><time><?= format_date($comment['created_at']) ?><?= !empty($comment['is_edited']) ? ' · Edited' : '' ?></time></div><p><?= nl2br(e($comment['content'])) ?></p><?php if ((int) $comment['user_id'] === $userId): ?><details><summary>Edit your comment</summary><form method="post" action="comment-action.php"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="action" value="edit"><input type="hidden" name="recipe_id" value="<?= (int) $recipe['id'] ?>"><input type="hidden" name="comment_id" value="<?= (int) $comment['id'] ?>"><textarea name="content" maxlength="1000" required><?= e($comment['content']) ?></textarea><button class="button button-small" type="submit">Save</button></form><form method="post" action="comment-action.php"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="recipe_id" value="<?= (int) $recipe['id'] ?>"><input type="hidden" name="comment_id" value="<?= (int) $comment['id'] ?>"><button class="text-button danger-text" type="submit">Delete comment</button></form></details><?php endif; ?></article><?php endforeach; ?></div><?php endif; ?></aside></div>
+<div class="recipe-detail-layout">
+    <article class="recipe-detail">
+        <a class="back-link" href="index.php">← Back to discover</a>
+        <div class="detail-heading">
+            <span class="category-label"><?= e($recipe['category_name']) ?></span>
+            <h1><?= e($recipe['title']) ?></h1>
+            <p class="detail-description"><?= e($recipe['description']) ?></p>
+            <div class="detail-meta">
+                <span>By <strong><?= e($recipe['author_name']) ?></strong></span>
+                <span><?= format_date($recipe['created_at']) ?><?= !empty($recipe['is_edited']) ? ' · Edited' : '' ?></span>
+            </div>
+        </div>
+        <div class="detail-actions">
+            <button class="favorite-button large <?= (int) $recipe['is_favorited'] ? 'is-favorited' : '' ?>" type="button" data-favorite-id="<?= (int) $recipe['id'] ?>" aria-pressed="<?= (int) $recipe['is_favorited'] ? 'true' : 'false' ?>" aria-label="<?= (int) $recipe['is_favorited'] ? 'Remove from favorites' : 'Save to favorites' ?>">
+                <span aria-hidden="true">★</span>
+                <span class="favorite-text"><?= (int) $recipe['is_favorited'] ? 'Saved' : 'Save to favorites' ?></span>
+            </button>
+            <?php if ((int) $recipe['user_id'] === $userId): ?>
+                <a class="button button-outline" href="edit-recipe.php?id=<?= (int) $recipe['id'] ?>">Edit recipe</a>
+                <form method="post" action="delete-recipe.php" onsubmit="return confirm('Delete this recipe?')">
+                    <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                    <input type="hidden" name="recipe_id" value="<?= (int) $recipe['id'] ?>">
+                    <button class="button button-danger" type="submit">Delete</button>
+                </form>
+            <?php endif; ?>
+        </div>
+        <div class="recipe-body">
+            <section>
+                <h2>Ingredients</h2>
+                <ul class="ingredient-list">
+                    <?php foreach ($recipe['ingredients'] as $ingredient): ?>
+                        <li><?= e($ingredient) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </section>
+            <section>
+                <h2>How to make it</h2>
+                <div class="instructions"><?= nl2br(e($recipe['instructions'])) ?></div>
+            </section>
+        </div>
+    </article>
+    <aside class="comments-panel">
+        <div class="section-heading">
+            <div><p class="eyebrow">Around the table</p><h2>Comments</h2></div>
+            <span class="result-count"><?= count($comments) ?></span>
+        </div>
+        <form class="comment-form" method="post" action="comment-action.php">
+            <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+            <input type="hidden" name="action" value="create">
+            <input type="hidden" name="recipe_id" value="<?= (int) $recipe['id'] ?>">
+            <label for="comment-content">Leave a note</label>
+            <textarea id="comment-content" name="content" maxlength="1000" placeholder="What did you think?" required></textarea>
+            <button class="button button-dark" type="submit">Add comment</button>
+        </form>
+        <?php if ($comments === []): ?>
+            <p class="muted">No notes yet. Be the first to say kamusta.</p>
+        <?php else: ?>
+            <div class="comment-list">
+                <?php foreach ($comments as $comment): ?>
+                    <article class="comment-item">
+                        <div class="comment-header">
+                            <strong><?= e($comment['author_name']) ?></strong>
+                            <time><?= format_date($comment['created_at']) ?><?= !empty($comment['is_edited']) ? ' · Edited' : '' ?></time>
+                        </div>
+                        <p><?= nl2br(e($comment['content'])) ?></p>
+                        <?php if ((int) $comment['user_id'] === $userId): ?>
+                            <details>
+                                <summary>Edit your comment</summary>
+                                <form method="post" action="comment-action.php">
+                                    <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                                    <input type="hidden" name="action" value="edit">
+                                    <input type="hidden" name="recipe_id" value="<?= (int) $recipe['id'] ?>">
+                                    <input type="hidden" name="comment_id" value="<?= (int) $comment['id'] ?>">
+                                    <textarea name="content" maxlength="1000" required><?= e($comment['content']) ?></textarea>
+                                    <button class="button button-small" type="submit">Save</button>
+                                </form>
+                                <form method="post" action="comment-action.php">
+                                    <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="recipe_id" value="<?= (int) $recipe['id'] ?>">
+                                    <input type="hidden" name="comment_id" value="<?= (int) $comment['id'] ?>">
+                                    <button class="text-button danger-text" type="submit">Delete comment</button>
+                                </form>
+                            </details>
+                        <?php endif; ?>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </aside>
+</div>
 <?php require __DIR__ . '/includes/footer.php'; ?>

@@ -105,8 +105,10 @@ class Recipe
         $where = [];
         $parameters = [];
         if ($search !== '') {
-            $where[] = '(recipes.title LIKE :search OR recipes.description LIKE :search)';
-            $parameters['search'] = '%' . $search . '%';
+            $where[] = '(recipes.title LIKE :search_title OR recipes.description LIKE :search_description)';
+            $searchValue = '%' . $search . '%';
+            $parameters['search_title'] = $searchValue;
+            $parameters['search_description'] = $searchValue;
         }
         if ($categoryId !== null && $categoryId > 0) {
             $where[] = 'recipes.category_id = :category_id';

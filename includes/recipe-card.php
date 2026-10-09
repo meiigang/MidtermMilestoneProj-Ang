@@ -5,8 +5,8 @@ $isFavorited = (int) ($recipe['is_favorited'] ?? 0) > 0;
 <article class="recipe-card">
     <div class="recipe-card-top">
         <span class="category-label"><?= e((string) ($recipe['category_name'] ?? 'Recipe')) ?></span>
-        <button class="favorite-button <?= $isFavorited ? 'is-favorited' : '' ?>" type="button" data-favorite-id="<?= (int) $recipe['id'] ?>" aria-pressed="<?= $isFavorited ? 'true' : 'false' ?>" aria-label="<?= $isFavorited ? 'Remove from saved recipes' : 'Save recipe' ?>">
-            <span aria-hidden="true">♥</span><span class="favorite-text"><?= $isFavorited ? 'Saved' : 'Save' ?></span>
+        <button class="favorite-button <?= $isFavorited ? 'is-favorited' : '' ?>" type="button" data-favorite-id="<?= (int) $recipe['id'] ?>" aria-pressed="<?= $isFavorited ? 'true' : 'false' ?>" aria-label="<?= $isFavorited ? 'Remove from favorites' : 'Save to favorites' ?>">
+            <span aria-hidden="true">★</span><span class="favorite-text"><?= $isFavorited ? 'Saved' : 'Save to favorites' ?></span>
         </button>
     </div>
     <h2><a href="recipe.php?id=<?= (int) $recipe['id'] ?>"><?= e((string) $recipe['title']) ?></a></h2>

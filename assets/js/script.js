@@ -52,8 +52,8 @@ async function toggleFavorite(button) {
     if (!response.ok || !data.success) throw new Error(data.message || 'Could not update saved recipes.');
     button.classList.toggle('is-favorited', data.is_favorited);
     button.setAttribute('aria-pressed', String(data.is_favorited));
-    button.setAttribute('aria-label', data.is_favorited ? 'Remove from saved recipes' : 'Save recipe');
-    button.querySelector('.favorite-text').textContent = data.is_favorited ? 'Saved' : 'Save';
+    button.setAttribute('aria-label', data.is_favorited ? 'Remove from favorites' : 'Save to favorites');
+    button.querySelector('.favorite-text').textContent = data.is_favorited ? 'Saved' : 'Save to favorites';
   } catch (error) {
     window.alert(error.message);
   } finally {

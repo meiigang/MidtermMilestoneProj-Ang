@@ -46,11 +46,6 @@ function format_date(string $date): string
     return date('M j, Y \a\t g:i A', strtotime($date));
 }
 
-function reading_time(string $text): int
-{
-    return max(1, (int) ceil(str_word_count(strip_tags($text)) / 200));
-}
-
 function old_input(string $key, string $default = ''): string
 {
     return e(isset($_SESSION['old'][$key]) && is_string($_SESSION['old'][$key]) ? $_SESSION['old'][$key] : $default);
