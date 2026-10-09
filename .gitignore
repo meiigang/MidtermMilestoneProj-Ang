@@ -1,0 +1,12 @@
+# Local environment files
+.env
+*.log
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local database exports with member data
+*_private_export.sql
